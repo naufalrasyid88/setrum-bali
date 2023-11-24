@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Setrum Bali | Transportasi</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://unpkg.com/aos@2.3.1/dist/aos.css" rel="stylesheet" />
+    <script src="https://unpkg.com/aos@2.3.1/dist/aos.js"></script>
+    <link rel="icon" href="assets/logo.svg"/>
+    <link rel="stylesheet" href="./src/style/global.css" />
+  </head>
+  <body>
+    <div class="flex">
+      <div class="text-gray-300 w-64 h-screen bg-gray-900">
+        <ul class="navbar-nav m-5 text-md">
+          <li class="nav-item">
+            <a class="nav-link" aria-current="page" href="/"
+              ><h2 class="text-2xl text-blue-600 font-bold">SETRUM BALI</h2></a
+            >
+          </li>
+          <li class="nav-item mt-10">
+            <a class="nav-link" aria-current="page" href="dashboard.html"
+              >Dashboard</a
+            >
+          </li>
+          <li class="nav-item mt-8">
+            <a class="text-white" href="terminal.html">Data Transportasi</a>
+          </li>
+        </ul>
+      </div>
+      <div class="content w-full bg-gray-100 h-screen overflow-scroll">
+        <div
+          class="navbar bg-white w-100 text-gray-800 flex justify-between px-16 py-5 items-center z-10 drop-shadow-md"
+        >
+        <a href="/"> </a>
+        <div class="">
+          <a href="index.html" class="mx-5">Home</a>
+          <a href="webgis/webgis.html" class="mx-5">Peta</a>
+          <a href="dashboard.html" class="mx-5">Dashboard</a>
+        </div>
+        </div>
+        <div class="p-8">
+          <h2 class="text-4xl font-medium my-8">Data Transportasi Bali</h2>
+          <div class="relative">
+            <table
+              class="w-full text-sm text-left text-gray-500 dark:text-gray-400"
+            >
+              <thead
+                class="text-xs text-gray-100 uppercase bg-gray-50 dark:bg-gray-700"
+              >
+                <tr>
+                  <th scope="col" class="py-3 px-6">Nomor</th>
+                  <th scope="col" class="py-3 px-6">Utilitas</th>
+                  <th scope="col" class="py-3 px-6">Nama</th>
+                  <th scope="col" class="py-3 px-6">X</th>
+                  <th scope="col" class="py-3 px-6">Y</th>
+                  <th scope="col" class="py-3 px-6">Alamat</th>
+                  <th scope="col" class="py-3 px-6">Deskripsi</th>
+                </tr>
+              </thead>
+              <tbody class="tbody"></tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+    </div>
+  </body>
+  <script src="./src/services/DB.js"></script>
+  <script src="./src/services/main.js"></script>
+</html>

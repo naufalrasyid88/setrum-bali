@@ -1,0 +1,348 @@
+
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <!-- Metadata -->
+    <meta charset="utf-8">
+    <meta name="viewport" content="initial-scale=1,user-scalable=no,maximum-scale=1,width=device-width">
+    <meta name="mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="author" content="DIVSIG UGM">
+    <meta name="description" content="leaflet basic">
+
+    <!-- Judul pada tab browser -->
+    <title>Setrum Bali | Peta</title>
+
+    <!-- Leaflet CSS Library -->
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.5.1/dist/leaflet.css">
+    <link rel="stylesheet" href="assets/plugins/leaflet-search/leaflet-search.css">
+    <link rel="stylesheet" href="assets/plugins/leaflet-mouseposition/L.Control.MousePosition.css">
+    <link rel="stylesheet" href="https://unpkg.com/leaflet-control-geocoder/dist/Control.Geocoder.css" />
+    <link rel="stylesheet" href="assets/plugins/leaflet-measure/leaflet-measure.css">
+    <link rel="stylesheet" href="assets/plugins/leaflet-easyprint/easyPrint.css">
+    <link rel="stylesheet" href="assets/plugins/leaflet.markercluster/dist/MarkerCluster.css">
+    <link rel="stylesheet" href="assets/plugins/leaflet.markercluster/dist/MarkerCluster.Default.css">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="assets/plugins/leaflet-routing-machine/dist/leaflet-routing-machine.css" />
+    <link rel="stylesheet" href="https://unpkg.com/leaflet-control-geocoder/dist/Control.Geocoder.css" />
+
+    
+    <link rel="stylesheet" href="/src/style/global.css">
+    
+    <link rel="icon" type="image/x-icon" href="/trade-bali/webgis/assets/img/logo/logo.svg">
+
+    <style>
+     /* Tampilan peta fullscreen */
+    html, body {
+      height: 100%;
+      width: 100%;
+      margin: 0px;
+    }
+    #map {
+      height: 89.5%;
+      width: 100%;
+      margin-bottom: 0px;
+    }
+
+    /* Background pada Judul */
+    *.info {
+    padding: 6px 8px;
+    font: 14px/16px Arial, Helvetica, sans-serif;
+    background: white;
+    background: rgba(255,255,255,0.8);
+    box-shadow: 0 0 15px rgba(0,0,0,0.2);
+    border-radius: 5px;
+    text-align: center;
+    }
+    .info h2 {
+    margin: 0 0 5px;
+    color: #777;
+  }
+    </style>
+    
+  </head>
+
+  <body>
+    <!-- Leaflet JavaScript Library -->
+    <script src="https://unpkg.com/leaflet@1.5.1/dist/leaflet.js"></script>
+    <script src="assets/plugins/leaflet-search/leaflet-search.js"></script>
+    <script src="assets/plugins/leaflet-mouseposition/L.Control.MousePosition.js"></script>
+    <script src="https://api.mapbox.com/mapbox.js/plugins/leaflet-locatecontrol/v0.43.0/L.Control.Locate.min.js"></script>
+    <script src="assets/plugins/leaflet-measure/leaflet-measure.js"></script>
+    <script src="assets/plugins/leaflet-easyprint/leaflet.easyPrint.js"></script>
+    <script src="assets/plugins/leaflet.markercluster/dist/leaflet.markercluster.js"></script>
+    <script src="assets/plugins/leaflet-routing-machine/dist/leaflet-routing-machine.js"></script>
+    <script src="https://unpkg.com/leaflet-control-geocoder/dist/Control.Geocoder.js"></script>
+    
+    <div class="navbar w-screen text-gray-600 font-medium bg-white flex justify-between lg:px-52 px-10 py-5 items-center z-10">
+      <a href="/trade-bali/index.html">
+        <h2 class="text-2xl font-bold text-blue-600">SETRUM BALI</h2>
+      </a>
+      <div class="nav-link">
+        <a href="../index.html" class="mx-5">Home</a>
+        <a href="webgis.html">Peta</a>
+        <a href="../dashboard.html" class="mx-5">Dashboard</a>
+      </div>
+    </div>
+        
+    <div id="map"></div>
+    <script src="leaflet.ajax.js"></script>
+    <script src="leaflet.ajax.min.js"></script>
+
+    <script>
+    /* Initial Map */
+    var map = L.map('map').setView([-8.363316064544545, 115.19758623567729],9); //lat, long, zoom
+      
+
+    /* Tile Basemap */
+    var basemap1 = L.tileLayer('https://tiles.stadiamaps.com/tiles/osm_bright/{z}/{x}/{y}{r}.png', {
+	    maxZoom: 20, attribution: 'Tiles &copy; Esri | <a href="Latihan WebGIS" target="_blank">DIVSIG UGM</a>'
+    });
+
+    var basemap2 = L.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/services/World_Street_Map/MapServer/tile/{z}/{y}/{x}');
+
+    var basemap3 = L.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}', {
+      attribution: 'Tiles &copy; Esri | <a href="Latihan WebGIS" target="_blank">DIVSIG UGM</a>'
+    });
+
+    var basemap4 = L.tileLayer('https://tiles.stadiamaps.com/tiles/alidade_smooth_dark/{z}/{x}/{y}{r}.png', {
+      attribution: '&copy; <a href="https://stadiamaps.com/">Stadia Maps</a>, &copy; <a href="https://openmaptiles.org/">OpenMapTiles</a> &copy; <a href="http://openstreetmap.org">OpenStreetMap</a> contributors'
+    });
+
+    basemap1.addTo(map);
+    
+    /* Icon for marker */
+    var pelabuhan = L.icon({
+      iconUrl: './assets/img/marker/boat.png',
+      iconSize: [36,36],
+    });
+    var bandara = L.icon({
+      iconUrl: './assets/img/marker/airport.png',
+      iconSize: [36,36],
+    });
+    var bus = L.icon({
+      iconUrl: './assets/img/marker/bus.png',
+      iconSize: [30,30],
+    });
+    /* Layer Marker */
+    var marker1 = L.marker([-8.746, 115.166], {icon: bandara});
+      marker1.addTo(map);
+      marker1.bindPopup("<center>Bandara I Gusti Ngurah Rai</center></br><center>Jalan Raya Gusti Ngurah Rai, Tuban, Kec. Kuta, Kabupaten Badung, Bali 80362</center>");
+    
+    var marker2 = L.marker([-8.162, 114.436], {icon: pelabuhan});
+      marker2.addTo(map);
+      marker2.bindPopup("<center>Pelabuhan Gilimanuk</center></br><center>Gilimanuk, Jembrana Regency, Bali</center>");
+
+    var marker3 = L.marker([-8.738, 115.212], {icon: pelabuhan});
+      marker3.addTo(map);
+      marker3.bindPopup("<center>Pelabuhan Benoa</center></br><center>Jl. Raya Pelabuhan Benoa No.9, Pedungan, Denpasar Selatan, Kota Denpasar, Bali</center>");
+
+    var marker4 = L.marker([-8.534, 115.509], {icon: pelabuhan});
+      marker4.addTo(map);
+      marker4.bindPopup("<center>Pelabuhan Padangbai</center></br><center>Jalan Pelabuhan, Padangbai, Manggis, Karangasem Regency, Bali 80871</center>");
+
+    var marker5 = L.marker([-8.103, 115.088], {icon: pelabuhan});
+      marker5.addTo(map);
+      marker5.bindPopup("<center>Pelabuhan Buleleng</center></br><center>Jl. Pelabuhan Buleleng, Kp. Bugis, Kec. Buleleng, Kabupaten Buleleng, Bali 81113</center>");
+    
+    var marker6 = L.marker([-8.193, 114.837], {icon: pelabuhan});
+      marker6.addTo(map);
+      marker6.bindPopup("<center>Pelabuhan Celukan Bawang</center></br><center>Jl. Pelabuhan Celukan Bawang No.35</center>");
+    
+    var marker7 = L.marker([-8.517, 115.506], {icon: pelabuhan});
+      marker7.addTo(map);
+      marker7.bindPopup("<center>Pelabuhan Amuk</center></br><center>Jl. Raya Ulakan-Karangasem</center>");
+    
+    var marker8 = L.marker([-8.674, 115.546], {icon: pelabuhan});
+      marker8.addTo(map);
+      marker8.bindPopup("<center>Pelabuhan Buyuk</center></br><center>Kutampi Kaler, Nusa Penida, Klungkung Regency, Bali 80771</center>");
+
+    var marker9 = L.marker([-8.672, 115.558], {icon: pelabuhan});
+      marker9.addTo(map);
+      marker9.bindPopup("<center>Pelabuhan Sampalan</center></br><center>Batununggul, Nusa Penida, Klungkung Regency, Bali 80771</center>");
+    
+    var marker10 = L.marker([-8.681, 115.487], {icon: pelabuhan});
+      marker10.addTo(map);
+      marker2.bindPopup("<center>Pelabuhan Toyapakeh</center></br><center>Kampung Toyapakeh, Nusa Penida, Klungkung Regency, Bali 80771</center>");
+    
+    var marker11 = L.marker([-8.687, 115.459], {icon: pelabuhan});
+      marker11.addTo(map);
+      marker11.bindPopup("<center>Pelabuhan Bias Munjul</center></br><center>Unnamed Road, Lembongan, Kec. Nusa Penida, Kabupaten Klungkung, Bali 80771</center>");
+    
+    var marker12 = L.marker([-8.559, 115.457], {icon: pelabuhan});
+      marker12.addTo(map);
+      marker12.bindPopup("<center>Pelabuhan Tribuana</center></br><center>Kusamba, Dawan, Klungkung Regency, Bali 80761</center>");
+    
+    var marker13 = L.marker([-8.667, 115.446], {icon: pelabuhan});
+      marker13.addTo(map);
+      marker13.bindPopup("<center>Pelabuhan Jungutbatu Nusa Lembongan</center></br><center>Gg. Nusa Indah, Jungutbatu, Kec. Nusa Penida, Kabupaten Klungkung, Bali 80771</center>");
+    
+    var marker14 = L.marker([-8.678, 115.488], {icon: pelabuhan});
+      marker14.addTo(map);
+      marker14.bindPopup("<center>Pelabuahan Prasi Sentana</center></br><center>Ped, Kec. Nusa Penida, Kabupaten Klungkung, Bali 80771</center>");
+    
+    var marker15 = L.marker([-8.669, 115.26], {icon: pelabuhan});
+      marker15.addTo(map);
+      marker15.bindPopup("<center>Pelabuhan Sanur</center></br><center>Jl. Matahari Terbit, Sanur Kaja, Denpasar Selatan, Kota Denpasar, Bali</center>");
+    
+    var marker16 = L.marker([-8.163, 114.436], {icon: bus});
+      marker16.addTo(map);
+      marker16.bindPopup("<center>Terminal Bus Gilimanuk</center></br><center>Gilimanuk, Melaya, Jembrana Regency, Bali 82252</center>");
+
+    var marker17 = L.marker([-8.354, 114.625], {icon: bus});
+      marker17.addTo(map);
+      marker17.bindPopup("<center>Terminal Bus Negara</center></br><center>Gilimanuk, Melaya, Jembrana Regency, Bali 82252</center>");
+
+    var marker18 = L.marker([-8.553, 115.14], {icon: bus});
+      marker18.addTo(map);
+      marker18.bindPopup("<center>Terminal Kediri</center></br><center>Jl. Ngurah Rai No.78</center>");
+
+    var marker19 = L.marker([-8.635, 115.206], {icon: bus});
+      marker19.addTo(map);
+      marker19.bindPopup("<center>Terminal Ubung</center></br><center>Gilimanuk, Melaya, Jembrana Regency, Bali 82252</center>");
+
+    var marker20 = L.marker([-8.559, 115.167], {icon: bus});
+      marker20.addTo(map);
+      marker20.bindPopup("<center>Terminal Mengwi</center></br><center>Gilimanuk, Melaya, Jembrana Regency, Bali 82252</center>");
+
+    var marker21 = L.marker([-8.631, 115.26], {icon: bus});
+      marker21.addTo(map);
+      marker21.bindPopup("<center>Terminal Batubulan</center></br><center>Gilimanuk, Melaya, Jembrana Regency, Bali 82252</center>");
+
+    var marker22 = L.marker([-8.542, 115.321], {icon: bus});
+      marker22.addTo(map);
+      marker22.bindPopup("<center>Terminal Gianyar</center></br><center>Gilimanuk, Melaya, Jembrana Regency, Bali 82252</center>");
+
+    var marker23 = L.marker([-8.535, 115.113], {icon: bus});
+      marker23.addTo(map);
+      marker23.bindPopup("<center>Terminal Persiapan</center></br><center>Gilimanuk, Melaya, Jembrana Regency, Bali 82252</center>");
+
+    var marker24 = L.marker([-8.452, 115.596], {icon: bus});
+      marker24.addTo(map);
+      marker24.bindPopup("<center>Terminal Karang Sokong</center></br><center>Gilimanuk, Melaya, Jembrana Regency, Bali 82252</center>");
+
+    var marker25 = L.marker([-8.147, 115.104], {icon: bus});
+      marker25.addTo(map);
+      marker25.bindPopup("<center>Terminal Sukasada</center></br><center>Gilimanuk, Melaya, Jembrana Regency, Bali 82252</center>");
+
+    var marker26 = L.marker([-8.093, 115.118], {icon: bus});
+      marker26.addTo(map);
+      marker26.bindPopup("<center>Terminal Penarukan</center></br><center>Gilimanuk, Melaya, Jembrana Regency, Bali 82252</center>");
+
+    var marker27 = L.marker([-8.649, 115.223], {icon: bus});
+      marker27.addTo(map);
+      marker27.bindPopup("<center>Terminal GOR Ngurah Rai</center></br><center>Gilimanuk, Melaya, Jembrana Regency, Bali 82252</center>");
+  
+    /* Control Layer */
+    var baseMaps = {
+        "OpenStreetMap": basemap1,
+        "Esri World Street": basemap2,
+        "Esri Imagery": basemap3,
+        "Stadia Dark Mode": basemap4
+    };
+    L.control.layers(baseMaps).addTo(map);
+      
+    /* Scale Bar */
+    L.control.scale({
+        maxWidth: 150,position:'bottomright'
+        }).addTo(map);
+    
+    /* Add Shapefile */
+    var admin = new L.GeoJSON.AJAX("BALI-PROV-EXP.geojson").addTo(map);
+    
+    /* Plugin Routing*/
+    L.Routing.control({
+        position: 'bottomleft',
+        showAlternatives: true,
+        geocoder: L.Control.Geocoder.nominatim(),
+      })
+      .on("routesfound", function(e) {
+        var routes = e.routes;
+        alert("Found " + routes.length + " route(s).");
+      }).addTo(map);
+    
+    
+    /*Plugin Search */
+    var searchControl = new L.Control.Search({
+      position: "topleft",
+      layer: admin, //Nama variabel layer
+      propertyName: "NAMOBJ", //Field untuk pencarian
+      zoom: 15,
+      marker: false,
+      moveToLocation: function(latlng, title, map) {
+        var zoom = map.getBoundsZoom(latlng.layer.getBounds());
+        map.setView(latlng, zoom);
+      },
+    });
+    searchControl
+      .on("search:locationfound", function(e) {
+        e.layer.setStyle({
+          fillColor: "#ffff00",
+          color: "#0000ff"
+        });
+      })
+      .on("search:collapse", function(e) {
+        featuresLayer.eachLayer(function(layer) {
+          featuresLayer.resetStyle(layer);
+        });
+    });
+    map.addControl(searchControl);
+    
+    /*Plugin Mouse Position Coordinate */
+    L.control.mousePosition({position:'bottomright',
+    separator: ',',
+    prefix: 'Koordinat : '
+    }).addTo(map);
+
+    /*Plugin Geolocation */
+    var locateControl = L.control.locate({
+      position: "topleft",
+      drawCircle: true,
+      follow: true,
+      setView: true,
+      keepCurrentZoomLevel: false,
+      markerStyle: {
+        weight: 1,
+        opacity: 0.8,
+        fillOpacity: 0.8,
+      },
+      circleStyle: {
+        weight: 1,
+        clickable: false,
+      },
+      icon: "fas fa-crosshairs",
+      metric: true,
+      strings: {
+        title: "Click for Your Location",
+        popup: "You're here. Accuracy {distance} {unit}",
+        outsideMapBoundsMsg: "Not available"
+      },
+      locateOptions: {
+        maxZoom: 16,
+        watch: true,
+        enableHighAccuracy: true,
+        maximumAge: 10000,
+        timeout: 10000
+      },
+    }).addTo(map);
+
+    /*Plugin Measurement Tool */
+    var measureControl = new L.Control.Measure({
+      position:'topright',
+      primaryLengthUnit: 'meters',
+      secondaryLengthUnit: 'kilometers',
+      primaryAreaUnit: 'hectares',
+      secondaryAreaUnit: 'sqmeters',
+      activeColor: '#FF0000',
+      completedColor: '#00FF00'
+    });
+    measureControl.addTo(map);
+
+    /*Plugin EasyPrint */
+    L.easyPrint({
+      title: 'Print'
+    }).addTo(map);
+   
+    </script>
+  </body>
+</html>
